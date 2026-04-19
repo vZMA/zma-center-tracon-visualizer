@@ -337,7 +337,7 @@ const App: Component = () => {
     <div class="flex h-screen">
       <div class="flex flex-col bg-slate-900 p-4 justify-between overflow-auto overscroll-contain z-50 pr-6">
         <div class="flex flex-col space-y-4">
-          <h1 class="text-white text-2xl">ZOA Visualizer</h1>
+          <h1 class="text-white text-2xl">ZMA Visualizer</h1>
 
           <button
             onClick={() => setIsProceduresOpen((prev) => !prev)}
