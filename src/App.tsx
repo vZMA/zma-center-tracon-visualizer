@@ -50,6 +50,7 @@ type TraconSplitPicker = {
   airport: string;
   area: string;
   options: TraconSplitOption[];
+  commonSectors?: string[];
   noneClearsArea?: boolean;
 };
 
@@ -72,6 +73,7 @@ const TRACON_SPLIT_PICKERS: TraconSplitPicker[] = [
   {
     airport: 'PBI',
     area: 'PBI',
+    commonSectors: ['PBI-N', 'PBI-S', 'PBI-H'],
     noneClearsArea: true,
     options: [
       { value: 'None', sectors: [] },
@@ -237,6 +239,9 @@ const App: Component = () => {
     picker.options.forEach((option) => {
       setTraconSectors(picker.area, option.sectors, option.value === selectedOption?.value);
     });
+    if (picker.commonSectors) {
+      setTraconSectors(picker.area, picker.commonSectors, true);
+    }
   };
 
   // If URL state exists, override whatever makePersisted loaded from localStorage
