@@ -292,13 +292,15 @@ const App: Component = () => {
             <Show when={activeTab() === 'tracon'}>
               <For each={TRACON_POLY_DEFINITIONS}>
                 {(definition) => (
-                  <SectorDisplayWithControls
-                    displayType="tracon"
-                    airspaceGroup={definition.name}
-                    hideConfigSelector={true}
-                    store={allStore}
-                    setStore={setAllStore}
-                  />
+                  <div class={definition.parentGroup ? 'ml-4' : undefined}>
+                    <SectorDisplayWithControls
+                      displayType="tracon"
+                      airspaceGroup={definition.name}
+                      hideConfigSelector={true}
+                      store={allStore}
+                      setStore={setAllStore}
+                    />
+                  </div>
                 )}
               </For>
             </Show>
