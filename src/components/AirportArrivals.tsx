@@ -24,7 +24,7 @@ export const AirportArrivals: Component<AirportArrivalsProps> = (props) => {
     }
 
     // if (!/^K[A-Z]{3}$/.test(airport)) {
-    //   setError("Please enter a valid US airport identifier (e.g. KSFO)");
+    //   setError("Please enter a valid US airport identifier (e.g. KMIA)");
     //   return;
     // }
 
@@ -110,7 +110,7 @@ export const AirportArrivals: Component<AirportArrivalsProps> = (props) => {
             class="bg-slate-700 text-white p-2 rounded w-full font-mono uppercase"
             value={airportInput()}
             onInput={(e) => setAirportInput(e.currentTarget.value)}
-            placeholder="KSFO"
+            placeholder="KMIA"
             maxLength={4}
           />
           <button
