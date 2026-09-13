@@ -1,5 +1,5 @@
 import { makePersisted } from '@solid-primitives/storage';
-import { Accessor, Component, createEffect, createSignal, DEV, For, Show } from 'solid-js';
+import { Component, createEffect, createSignal, DEV, For, Show } from 'solid-js';
 import { DEFAULT_MAP_STYLE, DEFAULT_SETTINGS, DEFAULT_VIEWPORT } from '~/lib/defaults';
 import { Section } from '~/components/ui-core';
 import { MapStyleSelector } from '~/components/MapStyleSelector';

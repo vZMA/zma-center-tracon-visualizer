@@ -1,6 +1,8 @@
 import { BaseMap, CenterAreaDefinition, MapStyle, TraconAreaPolys, TraconPolyDefinition } from '~/lib/types';
 import { DEFAULT_MAP_STYLE } from '~/lib/defaults';
 
+export const NAVDATA_API_URL = 'https://navdata.zmaartcc.org';
+
 // ZMA center sectors
 import atl01 from '~/polys/center/atl/ATL-01.geojson';
 import atl02 from '~/polys/center/atl/ATL-02.geojson';
