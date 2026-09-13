@@ -8,7 +8,7 @@ export const DEFAULT_MAP_STYLE: MapStyle = {
 };
 
 export const DEFAULT_VIEWPORT: Viewport = {
-  center: [-122.4, 37.8],
+  center: [-80.2, 25.8],
   zoom: 6.5,
   pitch: 0,
   bearing: 0,

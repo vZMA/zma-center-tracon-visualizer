@@ -1,10 +1,8 @@
-import { Accessor, Component, createSignal, Show } from 'solid-js';
+import { Component, createSignal, Show } from 'solid-js';
 import { Link, Check, X } from 'lucide-solid';
 import {
   AppDisplayState,
   CenterAreaDefinition,
-  TraconAirspaceConfig,
-  TraconAirportConfig,
   TraconPolyDefinition,
 } from '~/lib/types';
 import { encodeStateToURL, URL_STATE_PARAM } from '~/lib/urlState';
@@ -13,10 +11,6 @@ interface ShareButtonProps {
   store: AppDisplayState;
   centerDefaults: CenterAreaDefinition[];
   traconDefaults: TraconPolyDefinition[];
-  bayConfig: Accessor<TraconAirspaceConfig>;
-  sfoConfig: Accessor<TraconAirportConfig>;
-  oakConfig: Accessor<TraconAirportConfig>;
-  sjcConfig: Accessor<TraconAirportConfig>;
 }
 
 export const ShareButton: Component<ShareButtonProps> = (props) => {
@@ -25,12 +19,7 @@ export const ShareButton: Component<ShareButtonProps> = (props) => {
 
   const handleCopy = async () => {
     try {
-      const encoded = encodeStateToURL(props.store, props.centerDefaults, props.traconDefaults, {
-        bayConfig: props.bayConfig(),
-        sfoConfig: props.sfoConfig(),
-        oakConfig: props.oakConfig(),
-        sjcConfig: props.sjcConfig(),
-      });
+      const encoded = encodeStateToURL(props.store, props.centerDefaults, props.traconDefaults);
 
       const url = new URL(window.location.href);
       url.search = ''; // Clear existing params

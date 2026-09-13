@@ -82,65 +82,19 @@ export interface CenterAirspaceDisplayState {
 ///////////////////////////////////////////////////
 // Tracon interfaces
 ///////////////////////////////////////////////////
-export type TraconAirspaceConfigDependentGroup =
-  | 'RAPCON'
-  | 'FAT'
-  | 'Area E NV'
-  | 'Area E CA'
-  | 'Area A'
-  | 'Area B'
-  | 'Area C'
-  | 'Area D';
+export type TraconAirspaceConfigDependentGroup = string;
 
 /** Valid TraconAirspaceConfig values - single source of truth */
-export const TRACON_AIRSPACE_CONFIGS = [
-  'FATN',
-  'FATS',
-  'RNON',
-  'RNOS',
-  'SMFN',
-  'SMFS',
-  'SFOW',
-  'SFOE',
-  'SFO10',
-  'OAKE',
-  'SJCE',
-  '',
-] as const;
+export const TRACON_AIRSPACE_CONFIGS = [''] as const;
 
 export type TraconAirspaceConfig = (typeof TRACON_AIRSPACE_CONFIGS)[number];
 
 /** Valid TraconAirportConfig values - single source of truth */
-export const TRACON_AIRPORT_CONFIGS = ['SFOW', 'SFO19', 'SFO10', 'OAKW', 'OAKE', 'SJCW', 'SJCE'] as const;
+export const TRACON_AIRPORT_CONFIGS = [''] as const;
 
 export type TraconAirportConfig = (typeof TRACON_AIRPORT_CONFIGS)[number];
 
-export type TraconSectorName =
-  | 'Nugget'
-  | 'Silver'
-  | 'Elkhorn'
-  | 'Paradise'
-  | 'Seca'
-  | 'Morgan'
-  | 'Licke'
-  | 'Toga'
-  | 'Richmond'
-  | 'Sutro'
-  | 'Grove'
-  | 'Valley'
-  | 'Sunol'
-  | 'Boulder'
-  | 'Cedar'
-  | 'Foster'
-  | 'Laguna'
-  | 'Niles'
-  | 'Woodside'
-  | 'Friant'
-  | 'Chandler'
-  | 'South'
-  | 'Lemoore'
-  | 'Fallon'
-  | 'Travis';
+export type TraconSectorName = string;
 
 export interface TraconAirspaceConfigWithPolys {
   sectorName: TraconSectorName;

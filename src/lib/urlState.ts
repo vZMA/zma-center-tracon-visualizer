@@ -2,11 +2,7 @@ import {
   AppDisplayState,
   CenterAirspaceDisplayState,
   CenterAreaDefinition,
-  TRACON_AIRSPACE_CONFIGS,
-  TraconAirspaceConfig,
   TraconAirspaceDisplayState,
-  TRACON_AIRPORT_CONFIGS,
-  TraconAirportConfig,
   TraconPolyDefinition,
 } from '~/lib/types';
 
@@ -18,26 +14,11 @@ import {
  * - c: { areaIdx: { sectorIdx: [displayed, color?] } } - center sectors
  * - t: { areaIdx: { sectorIdx: [displayed, color?] } } - tracon sectors
  * - tc: { areaIdx: configString } - tracon area selectedConfigs (only non-defaults)
- * - bc, sc, oc, jc: top-level configs (only if different from defaults)
  */
 interface CompactSectorState {
   c?: Record<number, Record<number, [number, string?]>>; // center
   t?: Record<number, Record<number, [number, string?]>>; // tracon
   tc?: Record<number, string>; // tracon area selectedConfigs (only non-defaults)
-  bc?: string; // bayConfig (only if not 'SFOW')
-  sc?: string; // sfoConfig (only if not 'SFOW')
-  oc?: string; // oakConfig (only if not 'OAKW')
-  jc?: string; // sjcConfig (only if not 'SJCW')
-}
-
-/**
- * Top-level config values extracted from URL
- */
-export interface URLConfigState {
-  bayConfig?: TraconAirspaceConfig;
-  sfoConfig?: TraconAirportConfig;
-  oakConfig?: TraconAirportConfig;
-  sjcConfig?: TraconAirportConfig;
 }
 
 // ============================================================================
@@ -46,30 +27,6 @@ export interface URLConfigState {
 
 /** URL parameter name for state - single source of truth */
 export const URL_STATE_PARAM = 's';
-
-/** Validation Set derived from TRACON_AIRSPACE_CONFIGS in types.ts */
-const VALID_TRACON_AIRSPACE_CONFIGS = new Set<string>(TRACON_AIRSPACE_CONFIGS);
-
-/** Validation Set derived from TRACON_AIRPORT_CONFIGS in types.ts */
-const VALID_TRACON_AIRPORT_CONFIGS = new Set<string>(TRACON_AIRPORT_CONFIGS);
-
-/** Default values for top-level configs (used for delta compression) */
-export const DEFAULT_CONFIGS = {
-  bayConfig: 'SFOW' as TraconAirspaceConfig,
-  sfoConfig: 'SFOW' as TraconAirportConfig,
-  oakConfig: 'OAKW' as TraconAirportConfig,
-  sjcConfig: 'SJCW' as TraconAirportConfig,
-};
-
-/** Check if value is a valid TraconAirspaceConfig */
-function isValidTraconAirspaceConfig(value: unknown): value is TraconAirspaceConfig {
-  return typeof value === 'string' && VALID_TRACON_AIRSPACE_CONFIGS.has(value);
-}
-
-/** Check if value is a valid TraconAirportConfig */
-function isValidTraconAirportConfig(value: unknown): value is TraconAirportConfig {
-  return typeof value === 'string' && VALID_TRACON_AIRPORT_CONFIGS.has(value);
-}
 
 /**
  * Check if value is a valid CSS color string.
@@ -155,12 +112,6 @@ export function encodeStateToURL(
   state: AppDisplayState,
   centerDefaults: CenterAreaDefinition[],
   traconDefaults: TraconPolyDefinition[],
-  configs: {
-    bayConfig: TraconAirspaceConfig;
-    sfoConfig: TraconAirportConfig;
-    oakConfig: TraconAirportConfig;
-    sjcConfig: TraconAirportConfig;
-  },
 ): string {
   const compact: CompactSectorState = {};
 
@@ -216,20 +167,6 @@ export function encodeStateToURL(
     });
   });
 
-  // Include top-level configs only if different from defaults (delta compression)
-  if (configs.bayConfig !== DEFAULT_CONFIGS.bayConfig) {
-    compact.bc = configs.bayConfig;
-  }
-  if (configs.sfoConfig !== DEFAULT_CONFIGS.sfoConfig) {
-    compact.sc = configs.sfoConfig;
-  }
-  if (configs.oakConfig !== DEFAULT_CONFIGS.oakConfig) {
-    compact.oc = configs.oakConfig;
-  }
-  if (configs.sjcConfig !== DEFAULT_CONFIGS.sjcConfig) {
-    compact.jc = configs.sjcConfig;
-  }
-
   // If nothing differs from defaults, return empty string
   if (Object.keys(compact).length === 0) {
     return '';
@@ -284,44 +221,11 @@ export function decodeStateFromURL(urlParam: string | null): CompactSectorState 
       }
     }
 
-    // Validate config strings
-    if (parsed.bc !== undefined && typeof parsed.bc !== 'string') return null;
-    if (parsed.sc !== undefined && typeof parsed.sc !== 'string') return null;
-    if (parsed.oc !== undefined && typeof parsed.oc !== 'string') return null;
-    if (parsed.jc !== undefined && typeof parsed.jc !== 'string') return null;
-
     return parsed as CompactSectorState;
   } catch (e) {
     console.warn('Failed to decode URL state:', e);
     return null;
   }
-}
-
-/**
- * Extract top-level config values from decoded URL state.
- * Validates config values and returns defaults for missing/invalid values.
- */
-export function getURLConfigState(urlState: CompactSectorState | null): URLConfigState {
-  if (!urlState) return {};
-
-  // Only return configs that are present and valid in the URL state
-  // Missing configs mean "use default" (delta compression)
-  const result: URLConfigState = {};
-
-  if (urlState.bc !== undefined && isValidTraconAirspaceConfig(urlState.bc)) {
-    result.bayConfig = urlState.bc;
-  }
-  if (urlState.sc !== undefined && isValidTraconAirportConfig(urlState.sc)) {
-    result.sfoConfig = urlState.sc;
-  }
-  if (urlState.oc !== undefined && isValidTraconAirportConfig(urlState.oc)) {
-    result.oakConfig = urlState.oc;
-  }
-  if (urlState.jc !== undefined && isValidTraconAirportConfig(urlState.jc)) {
-    result.sjcConfig = urlState.jc;
-  }
-
-  return result;
 }
 
 /**
@@ -372,7 +276,7 @@ export function applyURLStateToDefaults(
     for (const [areaIdxStr, config] of Object.entries(urlState.tc)) {
       const areaIdx = parseInt(areaIdxStr, 10);
       if (isNaN(areaIdx) || areaIdx < 0 || areaIdx >= state.areaDisplayStates.length) continue;
-      if (isValidTraconAirspaceConfig(config)) {
+      if (config === '') {
         state.areaDisplayStates[areaIdx].selectedConfig = config;
       }
     }

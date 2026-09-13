@@ -1,7 +1,7 @@
 import { makePersisted } from '@solid-primitives/storage';
-import { Accessor, Component, createEffect, createMemo, createSignal, DEV, For, Setter, Show, untrack } from 'solid-js';
+import { Accessor, Component, createEffect, createSignal, DEV, For, Show } from 'solid-js';
 import { DEFAULT_MAP_STYLE, DEFAULT_SETTINGS, DEFAULT_VIEWPORT } from '~/lib/defaults';
-import { Section, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui-core';
+import { Section } from '~/components/ui-core';
 import { MapStyleSelector } from '~/components/MapStyleSelector';
 import { createStore, produce } from 'solid-js/store';
 import { BASE_MAPS, CENTER_POLY_DEFINITIONS, TRACON_POLY_DEFINITIONS } from '~/lib/config';
@@ -15,8 +15,6 @@ import {
   PopupState,
   Settings,
   ArrivalProcedure,
-  TraconAirspaceConfig,
-  TraconAirportConfig,
   TraconAreaPolys,
   TraconAirspaceDisplayState,
 } from '~/lib/types';
@@ -46,8 +44,6 @@ import {
   getURLStateParam,
   decodeStateFromURL,
   applyURLStateToDefaults,
-  getURLConfigState,
-  DEFAULT_CONFIGS,
 } from '~/lib/urlState';
 
 const createCenterDefaultState = (area: CenterAreaDefinition): CenterAirspaceDisplayState => ({
@@ -116,7 +112,6 @@ const App: Component = () => {
   // Check for URL state parameter and decode it
   const urlStateParam = getURLStateParam();
   const decodedURLState = decodeStateFromURL(urlStateParam);
-  const urlConfigState = getURLConfigState(decodedURLState);
 
   // Create default state
   const defaultDisplayState: AppDisplayState = {
@@ -222,107 +217,6 @@ const App: Component = () => {
   // Helper to create a persisted config signal that uses URL state if available
   // makePersisted ignores initial value if localStorage has data, so we must
   // explicitly set the value after creation when URL state is present
-  const createConfigSignal = <T,>(
-    defaultValue: T,
-    urlValue: T | undefined,
-    storageName: string,
-  ): [Accessor<T>, Setter<T>] => {
-    const [get, set] = makePersisted(createSignal<T>(defaultValue), { name: storageName });
-    // If URL state exists, override whatever makePersisted loaded from localStorage
-    if (urlValue !== undefined) {
-      set(() => urlValue);
-    }
-    return [get, set];
-  };
-
-  const [bayConfig, setBayConfig] = createConfigSignal<TraconAirspaceConfig>(
-    DEFAULT_CONFIGS.bayConfig,
-    urlConfigState.bayConfig,
-    'bayConfig',
-  );
-  const [sfoConfig, setSfoConfig] = createConfigSignal<TraconAirportConfig>(
-    DEFAULT_CONFIGS.sfoConfig,
-    urlConfigState.sfoConfig,
-    'sfoConfig',
-  );
-  const [oakConfig, setOakConfig] = createConfigSignal<TraconAirportConfig>(
-    DEFAULT_CONFIGS.oakConfig,
-    urlConfigState.oakConfig,
-    'oakConfig',
-  );
-  const [sjcConfig, setSjcConfig] = createConfigSignal<TraconAirportConfig>(
-    DEFAULT_CONFIGS.sjcConfig,
-    urlConfigState.sjcConfig,
-    'sjcConfig',
-  );
-
-  const sfoOptions = createMemo(() => {
-    if (bayConfig() === 'SFOW') {
-      return ['SFOW'];
-    } else if (bayConfig() === 'SFOE') {
-      return ['SFO19', 'SFO10'];
-    } else {
-      return [];
-    }
-  });
-
-  const oakOptions = createMemo(() => (bayConfig() === 'SFOW' ? ['OAKW', 'OAKE'] : ['OAKE']));
-  const sjcOptions = createMemo(() => (bayConfig() === 'SFOW' ? ['SJCW', 'SJCE'] : ['SJCE']));
-
-  const areaA: Accessor<TraconAirspaceConfig> = createMemo(() => {
-    if (bayConfig() === 'SFOW') {
-      return sjcConfig() === 'SJCE' ? 'SJCE' : 'SFOW';
-    } else {
-      return bayConfig() === 'SFOE' ? 'SFOE' : '';
-    }
-  });
-
-  const areaBC: Accessor<TraconAirspaceConfig> = createMemo(() => {
-    if (bayConfig() === 'SFOW') {
-      return oakConfig() === 'OAKE' ? 'OAKE' : 'SFOW';
-    } else {
-      if (bayConfig() === 'SFOE') {
-        return sfoConfig() === 'SFO19' ? 'SFOE' : 'SFO10';
-      } else {
-        return '';
-      }
-    }
-  });
-
-  const areaD: Accessor<TraconAirspaceConfig> = createMemo(() => {
-    if (bayConfig() === 'SFOW') {
-      return oakConfig() === 'OAKE' ? 'OAKE' : 'SFOW';
-    } else {
-      return bayConfig() === 'SFOE' ? 'SFOE' : '';
-    }
-  });
-
-  const rapcon: Accessor<TraconAirspaceConfig> = createMemo(() => {
-    return bayConfig();
-  });
-
-  createEffect((isInitialLoad) => {
-    const currentBayConfig = bayConfig();
-
-    if (currentBayConfig === 'SFOW') {
-      setSfoConfig(DEFAULT_CONFIGS.sfoConfig);
-
-      if (!isInitialLoad) {
-        setOakConfig(DEFAULT_CONFIGS.oakConfig);
-        setSjcConfig(DEFAULT_CONFIGS.sjcConfig);
-      }
-    } else if (currentBayConfig === 'SFOE') {
-      const currentSfoConfig = untrack(sfoConfig);
-      if (currentSfoConfig === DEFAULT_CONFIGS.sfoConfig || currentSfoConfig == null) {
-        setSfoConfig('SFO19');
-      }
-
-      setOakConfig('OAKE');
-      setSjcConfig('SJCE');
-    }
-    return false;
-  }, true);
-
   // Console debugging effects only created in DEV
   if (import.meta.env.DEV) {
     createEffect(() => {
@@ -396,183 +290,30 @@ const App: Component = () => {
             </div>
 
             <Show when={activeTab() === 'tracon'}>
-              {/*Temporary select for SFOW/SFOE*/}
-              <div>
-                <span class="block text-md text-white mb-1">Bay Flow</span>
-                <Select
-                  options={['SFOW', 'SFOE']}
-                  value={bayConfig()}
-                  onChange={(val) => {
-                    if (val) {
-                      setBayConfig(val);
-                    }
-                  }}
-                  disallowEmptySelection={true}
-                  itemComponent={(props) => <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>}
-                >
-                  <SelectTrigger aria-label="Map Style" class="w-[180px] cursor-pointer">
-                    <SelectValue<string>>{(state) => state.selectedOption()}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent />
-                </Select>
-              </div>
-
-              <div>
-                <span class="block text-md text-white mb-1">Airport Configs</span>
-                <div class="flex flex-col space-y-2">
-                  <Select
-                    options={sfoOptions()}
-                    value={sfoConfig()}
-                    onChange={(val) => {
-                      if (val) {
-                        setSfoConfig(val);
-                      }
-                    }}
-                    disallowEmptySelection={true}
-                    itemComponent={(props) => <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>}
-                  >
-                    <SelectTrigger aria-label="Map Style" class="w-[180px] cursor-pointer">
-                      <SelectValue<string>>{(state) => state.selectedOption()}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent />
-                  </Select>
-
-                  <Select
-                    options={oakOptions()}
-                    value={oakConfig()}
-                    onChange={(val) => {
-                      if (val) {
-                        setOakConfig(val);
-                      }
-                    }}
-                    disallowEmptySelection={true}
-                    itemComponent={(props) => <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>}
-                  >
-                    <SelectTrigger aria-label="Map Style" class="w-[180px] cursor-pointer">
-                      <SelectValue<string>>{(state) => state.selectedOption()}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent />
-                  </Select>
-
-                  <Select
-                    options={sjcOptions()}
-                    value={sjcConfig()}
-                    onChange={(val) => {
-                      if (val) {
-                        setSjcConfig(val);
-                      }
-                    }}
-                    disallowEmptySelection={true}
-                    itemComponent={(props) => <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>}
-                  >
-                    <SelectTrigger aria-label="Map Style" class="w-[180px] cursor-pointer">
-                      <SelectValue<string>>{(state) => state.selectedOption()}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent />
-                  </Select>
-                </div>
-              </div>
-
-              <SectorDisplayWithControls
-                displayType="tracon"
-                airspaceGroup={'Area A'}
-                store={allStore}
-                setStore={setAllStore}
-                dependentOnConfig={areaA()}
-              />
-
-              <SectorDisplayWithControls
-                displayType="tracon"
-                airspaceGroup={'Area B'}
-                store={allStore}
-                setStore={setAllStore}
-                dependentOnConfig={areaBC()}
-              />
-
-              <SectorDisplayWithControls
-                displayType="tracon"
-                airspaceGroup={'Area C'}
-                store={allStore}
-                setStore={setAllStore}
-                dependentOnConfig={areaBC()}
-              />
-
-              <SectorDisplayWithControls
-                displayType="tracon"
-                airspaceGroup={'Area D'}
-                store={allStore}
-                setStore={setAllStore}
-                dependentOnConfig={areaD()}
-              />
-
-              <SectorDisplayWithControls
-                displayType="tracon"
-                airspaceGroup={'Area E CA'}
-                airspaceConfigOptions={['SMFS', 'SMFN']}
-                store={allStore}
-                setStore={setAllStore}
-              />
-
-              <SectorDisplayWithControls
-                displayType="tracon"
-                airspaceGroup={'Area E NV'}
-                airspaceConfigOptions={['RNOS', 'RNON']}
-                store={allStore}
-                setStore={setAllStore}
-              />
-
-              <SectorDisplayWithControls
-                displayType="tracon"
-                airspaceGroup={'FAT'}
-                airspaceConfigOptions={['FATS', 'FATN']}
-                store={allStore}
-                setStore={setAllStore}
-              />
-
-              <SectorDisplayWithControls
-                displayType="tracon"
-                airspaceGroup={'RAPCON'}
-                store={allStore}
-                setStore={setAllStore}
-                dependentOnConfig={rapcon()}
-              />
+              <For each={TRACON_POLY_DEFINITIONS}>
+                {(definition) => (
+                  <SectorDisplayWithControls
+                    displayType="tracon"
+                    airspaceGroup={definition.name}
+                    hideConfigSelector={true}
+                    store={allStore}
+                    setStore={setAllStore}
+                  />
+                )}
+              </For>
             </Show>
 
             <Show when={activeTab() === 'center'}>
-              <SectorDisplayWithControls
-                displayType="center"
-                airspaceGroup={'Area North'}
-                store={allStore}
-                setStore={setAllStore}
-              />
-
-              <SectorDisplayWithControls
-                displayType="center"
-                airspaceGroup={'Area East'}
-                store={allStore}
-                setStore={setAllStore}
-              />
-
-              <SectorDisplayWithControls
-                displayType="center"
-                airspaceGroup={'Area South'}
-                store={allStore}
-                setStore={setAllStore}
-              />
-
-              <SectorDisplayWithControls
-                displayType="center"
-                airspaceGroup={'Pac North'}
-                store={allStore}
-                setStore={setAllStore}
-              />
-
-              <SectorDisplayWithControls
-                displayType="center"
-                airspaceGroup={'Pac South'}
-                store={allStore}
-                setStore={setAllStore}
-              />
+              <For each={CENTER_POLY_DEFINITIONS}>
+                {(definition) => (
+                  <SectorDisplayWithControls
+                    displayType="center"
+                    airspaceGroup={definition.name}
+                    store={allStore}
+                    setStore={setAllStore}
+                  />
+                )}
+              </For>
             </Show>
           </Section>
         </div>
@@ -587,10 +328,6 @@ const App: Component = () => {
             store={allStore}
             centerDefaults={CENTER_POLY_DEFINITIONS}
             traconDefaults={TRACON_POLY_DEFINITIONS}
-            bayConfig={bayConfig}
-            sfoConfig={sfoConfig}
-            oakConfig={oakConfig}
-            sjcConfig={sjcConfig}
           />
         </div>
 
