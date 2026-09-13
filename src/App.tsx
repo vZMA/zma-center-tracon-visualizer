@@ -18,7 +18,6 @@ import {
   TraconAreaPolys,
   TraconAirspaceDisplayState,
 } from '~/lib/types';
-import { Checkbox } from '~/components/ui-core/Checkbox';
 import { Footer } from '~/components/Footer';
 import { MapReset } from '~/components/MapReset';
 
@@ -136,7 +135,7 @@ const App: Component = () => {
     name: 'mapStyle',
   });
 
-  const [persistedBaseMaps, setPersistedBaseMaps] = makePersisted(
+  const [persistedBaseMaps] = makePersisted(
     createStore<PersistedBaseMapState[]>(
       BASE_MAPS.map((m) => ({
         id: m.name,
@@ -147,7 +146,7 @@ const App: Component = () => {
     { name: 'baseMaps' },
   );
 
-  const [mountedBaseMaps, setMountedBaseMaps] = createStore<MountedBaseMapState[]>(
+  const [mountedBaseMaps] = createStore<MountedBaseMapState[]>(
     persistedBaseMaps.map((m) => ({ id: m.baseMap.name, hasMounted: m.checked })),
   );
 
@@ -341,7 +340,7 @@ const App: Component = () => {
           <h1 class="text-white text-2xl">ZMA Visualizer</h1>
 
           <button
-            onClick={() => setIsProceduresOpen((prev) => !prev)}
+            onClick={() => setIsProceduresOpen((prev: any) => !prev)}
             class="flex items-center justify-center w-36 h-10 bg-slate-700 hover:bg-slate-600 text-white rounded transition-colors cursor-pointer"
             title="Airport Procedures"
           >
@@ -350,34 +349,6 @@ const App: Component = () => {
 
           <Section header="Style">
             <MapStyleSelector style={mapStyle} setStyle={setMapStyle} />
-          </Section>
-
-          <Section header="Base Maps">
-            <div class="flex flex-col space-y-1">
-              <For each={persistedBaseMaps}>
-                {(m) => (
-                  <Checkbox
-                    label={m.baseMap.name}
-                    checked={m.checked}
-                    onChange={(val: boolean) => {
-                      setPersistedBaseMaps(
-                        (m1) => m1.id === m.id,
-                        produce((m2) => {
-                          m2.checked = val;
-                        }),
-                      );
-                      let persisted = persistedBaseMaps.find((m1) => m1.id == m.id);
-                      setMountedBaseMaps(
-                        (m1) => m1.id === m.id,
-                        produce((m2) => {
-                          m2.hasMounted = m2.hasMounted || persisted!.checked;
-                        }),
-                      );
-                    }}
-                  />
-                )}
-              </For>
-            </div>
           </Section>
 
           <Section header="" class="space-y-2">
