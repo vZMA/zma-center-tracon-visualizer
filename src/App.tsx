@@ -1,7 +1,7 @@
 import { makePersisted } from '@solid-primitives/storage';
 import { Component, createEffect, createSignal, DEV, For, Show } from 'solid-js';
 import { DEFAULT_MAP_STYLE, DEFAULT_SETTINGS, DEFAULT_VIEWPORT } from '~/lib/defaults';
-import { Section } from '~/components/ui-core';
+import { Section, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui-core';
 import { MapStyleSelector } from '~/components/MapStyleSelector';
 import { createStore, produce } from 'solid-js/store';
 import { BASE_MAPS, CENTER_POLY_DEFINITIONS, TRACON_POLY_DEFINITIONS } from '~/lib/config';
@@ -45,6 +45,22 @@ import {
   decodeStateFromURL,
   applyURLStateToDefaults,
 } from '~/lib/urlState';
+
+const TRACON_SPLIT_PICKERS: { airport: string; options: string[] }[] = [
+  { airport: 'MIA', options: ['MIA E', 'MIA W'] },
+  { airport: 'FLL', options: ['FLL E', 'FLL W'] },
+  { airport: 'PBI', options: ['PBI E', 'PBI W'] },
+  { airport: 'RSW', options: ['RSW North', 'RSW South'] },
+  { airport: 'TPA', options: ['TPA North', 'TPA South'] },
+];
+
+const splitLabel = (split: string) => {
+  if (split.endsWith('North')) return 'N';
+  if (split.endsWith('South')) return 'S';
+  return split.endsWith(' E') ? 'E' : 'W';
+};
+
+const traconAirportLabel = (name: string) => name.split(' ')[0];
 
 const createCenterDefaultState = (area: CenterAreaDefinition): CenterAirspaceDisplayState => ({
   name: area.name,
@@ -146,6 +162,38 @@ const App: Component = () => {
     name: 'currentDisplay',
   });
 
+  const [selectedSplits, setSelectedSplits] = createStore<Record<string, string>>(
+    Object.fromEntries(TRACON_SPLIT_PICKERS.map((picker) => [picker.airport, picker.options[0]])),
+  );
+
+  const selectTraconSplit = (airport: string, selectedSplit: string, options: readonly string[]) => {
+    setSelectedSplits(airport, selectedSplit);
+    options
+      .filter((split) => split !== selectedSplit)
+      .forEach((split) => {
+        setAllStore(
+          'areaDisplayStates',
+          (area) => area.name === split,
+          'sectors',
+          () => true,
+          'isDisplayed',
+          false,
+        );
+      });
+  };
+
+  const isTraconDefinitionVisible = (name: string, parentGroup?: string) => {
+    const definitionPicker = TRACON_SPLIT_PICKERS.find((candidate) => candidate.options.includes(name));
+    const parentPicker = parentGroup
+      ? TRACON_SPLIT_PICKERS.find((candidate) => candidate.options.includes(parentGroup))
+      : undefined;
+
+    return (
+      (!definitionPicker || selectedSplits[definitionPicker.airport] === name) &&
+      (!parentPicker || selectedSplits[parentPicker.airport] === parentGroup)
+    );
+  };
+
   // If URL state exists, override whatever makePersisted loaded from localStorage
   if (decodedURLState) {
     const urlDisplayState = applyURLStateToDefaults(
@@ -157,6 +205,26 @@ const App: Component = () => {
     );
     setAllStore(urlDisplayState);
   }
+
+  TRACON_SPLIT_PICKERS.forEach((picker) => {
+    const selectedSplit =
+      picker.options.find((split) =>
+        allStore.areaDisplayStates.find((area) => area.name === split)?.sectors.some((sector) => sector.isDisplayed),
+      ) ?? picker.options[0];
+    setSelectedSplits(picker.airport, selectedSplit);
+    picker.options
+      .filter((split) => split !== selectedSplit)
+      .forEach((split) => {
+        setAllStore(
+          'areaDisplayStates',
+          (area) => area.name === split,
+          'sectors',
+          () => true,
+          'isDisplayed',
+          false,
+        );
+      });
+  });
 
   const [popup, setPopup] = createStore<PopupState>({
     hoveredPolys: [],
@@ -274,6 +342,31 @@ const App: Component = () => {
           </Section>
 
           <Section header="" class="space-y-2">
+            <Show when={activeTab() === 'tracon'}>
+              <div class="grid grid-cols-2 gap-2">
+                <For each={TRACON_SPLIT_PICKERS}>
+                  {(picker) => (
+                    <div>
+                      <label class="mb-1 block text-xs font-medium text-slate-400">{picker.airport}</label>
+                      <Select
+                        options={[...picker.options]}
+                        value={selectedSplits[picker.airport]}
+                        onChange={(value) => {
+                          if (value) selectTraconSplit(picker.airport, value, picker.options);
+                        }}
+                        disallowEmptySelection={true}
+                        itemComponent={(props) => <SelectItem item={props.item}>{splitLabel(props.item.rawValue)}</SelectItem>}
+                      >
+                        <SelectTrigger aria-label={`${picker.airport} split`}>
+                          <SelectValue<string>>{(state) => splitLabel(state.selectedOption())}</SelectValue>
+                        </SelectTrigger>
+                        <SelectContent />
+                      </Select>
+                    </div>
+                  )}
+                </For>
+              </div>
+            </Show>
             <div class="flex border-b border-slate-600 mb-2">
               <button
                 class={`px-4 py-2 font-medium ${activeTab() === 'tracon' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-400 hover:text-slate-200'}`}
@@ -292,15 +385,26 @@ const App: Component = () => {
             <Show when={activeTab() === 'tracon'}>
               <For each={TRACON_POLY_DEFINITIONS}>
                 {(definition) => (
-                  <div class={definition.parentGroup ? 'ml-4' : undefined}>
-                    <SectorDisplayWithControls
-                      displayType="tracon"
-                      airspaceGroup={definition.name}
-                      hideConfigSelector={true}
-                      store={allStore}
-                      setStore={setAllStore}
-                    />
-                  </div>
+                  <Show when={isTraconDefinitionVisible(definition.name, definition.parentGroup)}>
+                    <div class={definition.parentGroup ? 'ml-4' : undefined}>
+                      <SectorDisplayWithControls
+                        displayType="tracon"
+                        airspaceGroup={definition.name}
+                        headerLabel={traconAirportLabel(definition.name)}
+                        hideHeader={definition.name === 'PBI' || definition.name === 'TPA'}
+                        hideConfigSelector={true}
+                        exclusiveGroups={
+                          definition.exclusiveGroup
+                            ? TRACON_POLY_DEFINITIONS.filter(
+                                (candidate) => candidate.exclusiveGroup === definition.exclusiveGroup && candidate.name !== definition.name,
+                              ).map((candidate) => candidate.name)
+                            : undefined
+                        }
+                        store={allStore}
+                        setStore={setAllStore}
+                      />
+                    </div>
+                  </Show>
                 )}
               </For>
             </Show>

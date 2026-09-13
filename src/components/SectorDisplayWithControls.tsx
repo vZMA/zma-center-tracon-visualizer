@@ -8,6 +8,7 @@ import { useSectorState } from '~/lib/useSectorState';
 
 interface SectorDisplayWithControlsProps {
   airspaceGroup: string | TraconAirspaceConfigDependentGroup;
+  headerLabel?: string;
   store: AppDisplayState;
   setStore: SetStoreFunction<AppDisplayState>;
   displayType: 'center' | 'tracon';
@@ -15,6 +16,7 @@ interface SectorDisplayWithControlsProps {
   dependentOnConfig?: TraconAirspaceConfig;
   hideHeader?: boolean;
   hideConfigSelector?: boolean;
+  exclusiveGroups?: string[];
 }
 
 export const SectorDisplayWithControls: Component<SectorDisplayWithControlsProps> = (props) => {
@@ -56,6 +58,11 @@ export const SectorDisplayWithControls: Component<SectorDisplayWithControlsProps
   });
 
   const handleCheckboxChange = (sectorName: string, value: boolean) => {
+    if (value) {
+      props.exclusiveGroups?.forEach((group) => {
+        sectorState.toggleAllSectors(props.displayType, group, false);
+      });
+    }
     sectorState.toggleSectorDisplay(props.displayType, props.airspaceGroup as string, sectorName, value);
   };
 
@@ -64,6 +71,11 @@ export const SectorDisplayWithControls: Component<SectorDisplayWithControlsProps
   };
 
   const handleToggleAll = (value: boolean) => {
+    if (value) {
+      props.exclusiveGroups?.forEach((group) => {
+        sectorState.toggleAllSectors(props.displayType, group, false);
+      });
+    }
     sectorState.toggleAllSectors(props.displayType, props.airspaceGroup as string, value);
   };
 
@@ -86,7 +98,7 @@ export const SectorDisplayWithControls: Component<SectorDisplayWithControlsProps
               class="group-hover:text-white transition-colors duration-200 cursor-pointer"
               onClick={() => setIsExpanded(!isExpanded())}
             >
-              {props.airspaceGroup}
+              {props.headerLabel ?? props.airspaceGroup}
             </span>
 
             <div class="flex ml-auto space-x-2">

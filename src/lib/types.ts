@@ -126,6 +126,7 @@ export interface TraconPolyDefinition {
   name: TraconAirspaceConfigDependentGroup;
   polys: TraconAreaPolys;
   parentGroup?: TraconAirspaceConfigDependentGroup;
+  exclusiveGroup?: string;
 }
 
 export interface TraconSectorDisplayState {

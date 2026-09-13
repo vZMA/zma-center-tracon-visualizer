@@ -192,26 +192,26 @@ export const CENTER_POLY_DEFINITIONS: CenterAreaDefinition[] = [
 export const TRACON_POLY_DEFINITIONS: TraconPolyDefinition[] = [
   { name: 'HST', polys: traconArea('HST', [{ name: 'HST-H', url: hstH }]) },
   { name: 'NQX', polys: traconArea('NQX', [{ name: 'NQX-B', url: nqxb }]) },
-  { name: 'MIA E', polys: traconArea('MIA E', [
+  { name: 'MIA E', exclusiveGroup: 'MIA E/W', polys: traconArea('MIA E', [
     { name: 'MIA-A-E', url: miaAE }, { name: 'MIA-D-EE', url: miaDEE }, { name: 'MIA-D-EW', url: miaDEW },
     { name: 'MIA-FROGZ-E', url: miaFrogzE }, { name: 'MIA-G-E', url: miaGE }, { name: 'MIA-H-E', url: miaHE }, { name: 'MIA-J-E', url: miaJE },
     { name: 'MIA-L-EE', url: miaLEE }, { name: 'MIA-L-EW', url: miaLEW }, { name: 'MIA-N-E', url: miaNE }, { name: 'MIA-Q-EE', url: miaQEE },
     { name: 'MIA-Q-EW', url: miaQEW }, { name: 'MIA-R-E', url: miaRE }, { name: 'MIA-S-E', url: miaSE }, { name: 'MIA-V-E', url: miaVE },
     { name: 'MIA-W-E', url: miaWE }, { name: 'MIA-Z-EE', url: miaZEE }, { name: 'MIA-Z-EW', url: miaZEW },
   ]) },
-  { name: 'FLL E', parentGroup: 'MIA E', polys: traconArea('FLL E', [{ name: 'MIA-F-E', url: miaFE }]) },
-  { name: 'MIA W', polys: traconArea('MIA W', [
+  { name: 'FLL E', parentGroup: 'MIA E', exclusiveGroup: 'FLL E/W', polys: traconArea('FLL E', [{ name: 'MIA-F-E', url: miaFE }]) },
+  { name: 'MIA W', exclusiveGroup: 'MIA E/W', polys: traconArea('MIA W', [
     { name: 'MIA-A-W', url: miaAW }, { name: 'MIA-D-WE', url: miaDWE }, { name: 'MIA-D-WW', url: miaDWW },
     { name: 'MIA-FROGZ-W', url: miaFrogzW }, { name: 'MIA-G-W', url: miaGW }, { name: 'MIA-H-W', url: miaHW }, { name: 'MIA-J-W', url: miaJW },
     { name: 'MIA-L-WE', url: miaLWE }, { name: 'MIA-L-WW', url: miaLWW }, { name: 'MIA-N-W', url: miaNW }, { name: 'MIA-Q-WE', url: miaQWE },
     { name: 'MIA-Q-WW', url: miaQWW }, { name: 'MIA-R-W', url: miaRW }, { name: 'MIA-S-W', url: miaSW }, { name: 'MIA-V-W', url: miaVW },
     { name: 'MIA-W-W', url: miaWW }, { name: 'MIA-Z-WE', url: miaZWE }, { name: 'MIA-Z-WW', url: miaZWW },
   ]) },
-  { name: 'FLL W', parentGroup: 'MIA W', polys: traconArea('FLL W', [{ name: 'MIA-F-W', url: miaFW }]) },
-  { name: 'PBI E', polys: traconArea('PBI E', [
+  { name: 'FLL W', parentGroup: 'MIA W', exclusiveGroup: 'FLL E/W', polys: traconArea('FLL W', [{ name: 'MIA-F-W', url: miaFW }]) },
+  { name: 'PBI E', exclusiveGroup: 'PBI E/W', polys: traconArea('PBI E', [
     { name: 'PBI-A-E', url: pbiAE }, { name: 'PBI-B-E', url: pbiBE }, { name: 'PBI-F-E', url: pbiFE }, { name: 'PBI-I-E', url: pbiIE }, { name: 'PBI-P-E', url: pbiPE },
   ]) },
-  { name: 'PBI W', polys: traconArea('PBI W', [
+  { name: 'PBI W', exclusiveGroup: 'PBI E/W', polys: traconArea('PBI W', [
     { name: 'PBI-A-W', url: pbiAW }, { name: 'PBI-B-W', url: pbiBW }, { name: 'PBI-F-W', url: pbiFW }, { name: 'PBI-I-W', url: pbiIW }, { name: 'PBI-P-W', url: pbiPW },
   ]) },
   { name: 'PBI', polys: traconArea('PBI', [{ name: 'PBI-H', url: pbiH }, { name: 'PBI-N', url: pbiN }, { name: 'PBI-S', url: pbiS }]) },
