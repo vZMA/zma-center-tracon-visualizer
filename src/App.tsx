@@ -180,17 +180,13 @@ const App: Component = () => {
           false,
         );
       });
-  };
-
-  const isTraconDefinitionVisible = (name: string, parentGroup?: string) => {
-    const definitionPicker = TRACON_SPLIT_PICKERS.find((candidate) => candidate.options.includes(name));
-    const parentPicker = parentGroup
-      ? TRACON_SPLIT_PICKERS.find((candidate) => candidate.options.includes(parentGroup))
-      : undefined;
-
-    return (
-      (!definitionPicker || selectedSplits[definitionPicker.airport] === name) &&
-      (!parentPicker || selectedSplits[parentPicker.airport] === parentGroup)
+    setAllStore(
+      'areaDisplayStates',
+      (area) => area.name === selectedSplit,
+      'sectors',
+      () => true,
+      'isDisplayed',
+      true,
     );
   };
 
@@ -385,26 +381,24 @@ const App: Component = () => {
             <Show when={activeTab() === 'tracon'}>
               <For each={TRACON_POLY_DEFINITIONS}>
                 {(definition) => (
-                  <Show when={isTraconDefinitionVisible(definition.name, definition.parentGroup)}>
-                    <div class={definition.parentGroup ? 'ml-4' : undefined}>
-                      <SectorDisplayWithControls
-                        displayType="tracon"
-                        airspaceGroup={definition.name}
-                        headerLabel={traconAirportLabel(definition.name)}
-                        hideHeader={definition.name === 'PBI' || definition.name === 'TPA'}
-                        hideConfigSelector={true}
-                        exclusiveGroups={
-                          definition.exclusiveGroup
-                            ? TRACON_POLY_DEFINITIONS.filter(
-                                (candidate) => candidate.exclusiveGroup === definition.exclusiveGroup && candidate.name !== definition.name,
-                              ).map((candidate) => candidate.name)
-                            : undefined
-                        }
-                        store={allStore}
-                        setStore={setAllStore}
-                      />
-                    </div>
-                  </Show>
+                  <div class={definition.parentGroup ? 'ml-4' : undefined}>
+                    <SectorDisplayWithControls
+                      displayType="tracon"
+                      airspaceGroup={definition.name}
+                      headerLabel={traconAirportLabel(definition.name)}
+                      hideHeader={definition.name === 'PBI' || definition.name === 'TPA'}
+                      hideConfigSelector={true}
+                      exclusiveGroups={
+                        definition.exclusiveGroup
+                          ? TRACON_POLY_DEFINITIONS.filter(
+                              (candidate) => candidate.exclusiveGroup === definition.exclusiveGroup && candidate.name !== definition.name,
+                            ).map((candidate) => candidate.name)
+                          : undefined
+                      }
+                      store={allStore}
+                      setStore={setAllStore}
+                    />
+                  </div>
                 )}
               </For>
             </Show>
