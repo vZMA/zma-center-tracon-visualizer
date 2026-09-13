@@ -46,21 +46,72 @@ import {
   applyURLStateToDefaults,
 } from '~/lib/urlState';
 
-const TRACON_SPLIT_PICKERS: { airport: string; options: string[] }[] = [
-  { airport: 'MIA', options: ['MIA E', 'MIA W'] },
-  { airport: 'FLL', options: ['FLL E', 'FLL W'] },
-  { airport: 'PBI', options: ['PBI E', 'PBI W'] },
-  { airport: 'RSW', options: ['RSW North', 'RSW South'] },
-  { airport: 'TPA', options: ['TPA North', 'TPA South'] },
+type TraconSplitOption = { value: string; sectors: string[] };
+type TraconSplitPicker = {
+  airport: string;
+  area: string;
+  options: TraconSplitOption[];
+  noneClearsArea?: boolean;
+};
+
+const TRACON_SPLIT_PICKERS: TraconSplitPicker[] = [
+  {
+    airport: 'MIA',
+    area: 'MIA',
+    noneClearsArea: true,
+    options: [
+      { value: 'None', sectors: [] },
+      { value: 'MIA E', sectors: ['MIA-A-E', 'MIA-D-EE', 'MIA-D-EW', 'MIA-FROGZ-E', 'MIA-G-E', 'MIA-H-E', 'MIA-J-E', 'MIA-L-EE', 'MIA-L-EW', 'MIA-N-E', 'MIA-Q-EE', 'MIA-Q-EW', 'MIA-R-E', 'MIA-S-E', 'MIA-V-E', 'MIA-W-E', 'MIA-Z-EE', 'MIA-Z-EW'] },
+      { value: 'MIA W', sectors: ['MIA-A-W', 'MIA-D-WE', 'MIA-D-WW', 'MIA-FROGZ-W', 'MIA-G-W', 'MIA-H-W', 'MIA-J-W', 'MIA-L-WE', 'MIA-L-WW', 'MIA-N-W', 'MIA-Q-WE', 'MIA-Q-WW', 'MIA-R-W', 'MIA-S-W', 'MIA-V-W', 'MIA-W-W', 'MIA-Z-WE', 'MIA-Z-WW'] },
+    ],
+  },
+  {
+    airport: 'FLL',
+    area: 'MIA',
+    options: [
+      { value: 'None', sectors: [] },
+      { value: 'FLL E', sectors: ['MIA-F-E'] },
+      { value: 'FLL W', sectors: ['MIA-F-W'] },
+    ],
+  },
+  {
+    airport: 'PBI',
+    area: 'PBI',
+    noneClearsArea: true,
+    options: [
+      { value: 'None', sectors: [] },
+      { value: 'PBI E', sectors: ['PBI-A-E', 'PBI-B-E', 'PBI-F-E', 'PBI-I-E', 'PBI-P-E'] },
+      { value: 'PBI W', sectors: ['PBI-A-W', 'PBI-B-W', 'PBI-F-W', 'PBI-I-W', 'PBI-P-W'] },
+    ],
+  },
+  {
+    airport: 'RSW',
+    area: 'RSW',
+    noneClearsArea: true,
+    options: [
+      { value: 'None', sectors: [] },
+      { value: 'RSW North', sectors: ['RSW-E-E', 'RSW-E-W', 'RSW-F-E', 'RSW-F-W', 'RSW-G-E', 'RSW-G-W'] },
+      { value: 'RSW South', sectors: ['RSW-L-E', 'RSW-L-W', 'RSW-S-E', 'RSW-S-W', 'RSW-W-E', 'RSW-W-W'] },
+    ],
+  },
+  {
+    airport: 'TPA',
+    area: 'TPA',
+    noneClearsArea: true,
+    options: [
+      { value: 'None', sectors: [] },
+      { value: 'TPA North', sectors: ['TPA-B-N', 'TPA-D-N', 'TPA-E-N', 'TPA-F-N', 'TPA-G-N', 'TPA-P-N', 'TPA-S-N', 'TPA-W-N'] },
+      { value: 'TPA South', sectors: ['TPA-B-S', 'TPA-D-S', 'TPA-E-S', 'TPA-F-S', 'TPA-G-S', 'TPA-P-S', 'TPA-S-S', 'TPA-W-S'] },
+    ],
+  },
 ];
 
 const splitLabel = (split: string) => {
+  if (split === 'None') return 'None';
   if (split.endsWith('North')) return 'N';
   if (split.endsWith('South')) return 'S';
   return split.endsWith(' E') ? 'E' : 'W';
 };
-
-const traconAirportLabel = (name: string) => name.split(' ')[0];
 
 const createCenterDefaultState = (area: CenterAreaDefinition): CenterAirspaceDisplayState => ({
   name: area.name,
@@ -163,31 +214,36 @@ const App: Component = () => {
   });
 
   const [selectedSplits, setSelectedSplits] = createStore<Record<string, string>>(
-    Object.fromEntries(TRACON_SPLIT_PICKERS.map((picker) => [picker.airport, picker.options[0]])),
+    Object.fromEntries(TRACON_SPLIT_PICKERS.map((picker) => [picker.airport, picker.options[0].value])),
   );
 
-  const selectTraconSplit = (airport: string, selectedSplit: string, options: readonly string[]) => {
-    setSelectedSplits(airport, selectedSplit);
-    options
-      .filter((split) => split !== selectedSplit)
-      .forEach((split) => {
-        setAllStore(
-          'areaDisplayStates',
-          (area) => area.name === split,
-          'sectors',
-          () => true,
-          'isDisplayed',
-          false,
-        );
-      });
+  const setTraconSectors = (areaName: string, sectorNames: string[], isDisplayed: boolean) => {
     setAllStore(
       'areaDisplayStates',
-      (area) => area.name === selectedSplit,
+      (area) => area.name === areaName,
       'sectors',
-      () => true,
+      (sector) => sectorNames.includes(sector.name),
       'isDisplayed',
-      true,
+      isDisplayed,
     );
+  };
+
+  const selectTraconSplit = (picker: TraconSplitPicker, selectedSplit: string) => {
+    setSelectedSplits(picker.airport, selectedSplit);
+    const selectedOption = picker.options.find((option) => option.value === selectedSplit);
+
+    if (selectedSplit === 'None') {
+      if (picker.noneClearsArea) {
+        setAllStore('areaDisplayStates', (area) => area.name === picker.area, 'sectors', (_sector) => true, 'isDisplayed', false);
+      } else {
+        setTraconSectors(picker.area, picker.options.flatMap((option) => option.sectors), false);
+      }
+      return;
+    }
+
+    picker.options.forEach((option) => {
+      setTraconSectors(picker.area, option.sectors, option.value === selectedOption?.value);
+    });
   };
 
   // If URL state exists, override whatever makePersisted loaded from localStorage
@@ -204,22 +260,15 @@ const App: Component = () => {
 
   TRACON_SPLIT_PICKERS.forEach((picker) => {
     const selectedSplit =
-      picker.options.find((split) =>
-        allStore.areaDisplayStates.find((area) => area.name === split)?.sectors.some((sector) => sector.isDisplayed),
-      ) ?? picker.options[0];
+      picker.options.find((option) =>
+        option.sectors.some((sectorName) =>
+          allStore.areaDisplayStates.find((area) => area.name === picker.area)?.sectors.some((sector) => sector.name === sectorName && sector.isDisplayed),
+        ),
+      )?.value ?? picker.options[0].value;
     setSelectedSplits(picker.airport, selectedSplit);
     picker.options
-      .filter((split) => split !== selectedSplit)
-      .forEach((split) => {
-        setAllStore(
-          'areaDisplayStates',
-          (area) => area.name === split,
-          'sectors',
-          () => true,
-          'isDisplayed',
-          false,
-        );
-      });
+      .filter((option) => option.value !== selectedSplit)
+      .forEach((option) => setTraconSectors(picker.area, option.sectors, false));
   });
 
   const [popup, setPopup] = createStore<PopupState>({
@@ -345,10 +394,10 @@ const App: Component = () => {
                     <div>
                       <label class="mb-1 block text-xs font-medium text-slate-400">{picker.airport}</label>
                       <Select
-                        options={[...picker.options]}
+                        options={picker.options.map((option) => option.value)}
                         value={selectedSplits[picker.airport]}
                         onChange={(value) => {
-                          if (value) selectTraconSplit(picker.airport, value, picker.options);
+                          if (value) selectTraconSplit(picker, value);
                         }}
                         disallowEmptySelection={true}
                         itemComponent={(props) => <SelectItem item={props.item}>{splitLabel(props.item.rawValue)}</SelectItem>}
@@ -385,16 +434,7 @@ const App: Component = () => {
                     <SectorDisplayWithControls
                       displayType="tracon"
                       airspaceGroup={definition.name}
-                      headerLabel={traconAirportLabel(definition.name)}
-                      hideHeader={definition.name === 'PBI' || definition.name === 'TPA'}
                       hideConfigSelector={true}
-                      exclusiveGroups={
-                        definition.exclusiveGroup
-                          ? TRACON_POLY_DEFINITIONS.filter(
-                              (candidate) => candidate.exclusiveGroup === definition.exclusiveGroup && candidate.name !== definition.name,
-                            ).map((candidate) => candidate.name)
-                          : undefined
-                      }
                       store={allStore}
                       setStore={setAllStore}
                     />
