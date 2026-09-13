@@ -54,48 +54,51 @@ type TraconSplitPicker = {
   noneClearsArea?: boolean;
 };
 
-const createDirectionalOptions = (
-  firstDirection: string,
-  firstSectors: string[],
-  secondDirection: string,
-  secondSectors: string[],
-): TraconSplitOption[] => [
-  { value: 'None', sectors: [] },
-  { value: `App-${firstDirection}`, sectors: firstSectors.filter((sector) => sector.includes('-A-')) },
-  { value: `Dep-${firstDirection}`, sectors: firstSectors.filter((sector) => sector.includes('-D-')) },
-  { value: `App-${secondDirection}`, sectors: secondSectors.filter((sector) => sector.includes('-A-')) },
-  { value: `Dep-${secondDirection}`, sectors: secondSectors.filter((sector) => sector.includes('-D-')) },
-];
-
 const TRACON_SPLIT_PICKERS: TraconSplitPicker[] = [
   {
     airport: 'MIA',
     area: 'MIA',
     noneClearsArea: true,
-    options: createDirectionalOptions('E', ['MIA-A-E', 'MIA-D-EE', 'MIA-D-EW', 'MIA-FROGZ-E', 'MIA-G-E', 'MIA-H-E', 'MIA-J-E', 'MIA-L-EE', 'MIA-L-EW', 'MIA-N-E', 'MIA-Q-EE', 'MIA-Q-EW', 'MIA-R-E', 'MIA-S-E', 'MIA-V-E', 'MIA-W-E', 'MIA-Z-EE', 'MIA-Z-EW'], 'W', ['MIA-A-W', 'MIA-D-WE', 'MIA-D-WW', 'MIA-FROGZ-W', 'MIA-G-W', 'MIA-H-W', 'MIA-J-W', 'MIA-L-WE', 'MIA-L-WW', 'MIA-N-W', 'MIA-Q-WE', 'MIA-Q-WW', 'MIA-R-W', 'MIA-S-W', 'MIA-V-W', 'MIA-W-W', 'MIA-Z-WE', 'MIA-Z-WW']),
+    options: [
+      { value: 'None', sectors: [] },
+      { value: 'E', sectors: ['MIA-A-E', 'MIA-D-EE', 'MIA-D-EW', 'MIA-F-E', 'MIA-FROGZ-E', 'MIA-G-E', 'MIA-H-E', 'MIA-J-E', 'MIA-L-EE', 'MIA-L-EW', 'MIA-N-E', 'MIA-Q-EE', 'MIA-Q-EW', 'MIA-R-E', 'MIA-S-E', 'MIA-V-E', 'MIA-W-E', 'MIA-Z-EE', 'MIA-Z-EW'] },
+      { value: 'W', sectors: ['MIA-A-W', 'MIA-D-WE', 'MIA-D-WW', 'MIA-F-W', 'MIA-FROGZ-W', 'MIA-G-W', 'MIA-H-W', 'MIA-J-W', 'MIA-L-WE', 'MIA-L-WW', 'MIA-N-W', 'MIA-Q-WE', 'MIA-Q-WW', 'MIA-R-W', 'MIA-S-W', 'MIA-V-W', 'MIA-W-W', 'MIA-Z-WE', 'MIA-Z-WW'] },
+    ],
   },
   {
     airport: 'FLL',
     area: 'MIA',
-    options: createDirectionalOptions('E', ['MIA-F-E'], 'W', ['MIA-F-W']),
+    options: [{ value: 'None', sectors: [] }, { value: 'E', sectors: ['MIA-F-E'] }, { value: 'W', sectors: ['MIA-F-W'] }],
   },
   {
     airport: 'PBI',
     area: 'PBI',
     noneClearsArea: true,
-    options: createDirectionalOptions('E', ['PBI-A-E', 'PBI-B-E', 'PBI-F-E', 'PBI-I-E', 'PBI-P-E'], 'W', ['PBI-A-W', 'PBI-B-W', 'PBI-F-W', 'PBI-I-W', 'PBI-P-W']),
+    options: [
+      { value: 'None', sectors: [] },
+      { value: 'E', sectors: ['PBI-A-E', 'PBI-B-E', 'PBI-F-E', 'PBI-I-E', 'PBI-P-E'] },
+      { value: 'W', sectors: ['PBI-A-W', 'PBI-B-W', 'PBI-F-W', 'PBI-I-W', 'PBI-P-W'] },
+    ],
   },
   {
     airport: 'RSW',
     area: 'RSW',
     noneClearsArea: true,
-    options: createDirectionalOptions('N', ['RSW-E-E', 'RSW-E-W', 'RSW-F-E', 'RSW-F-W', 'RSW-G-E', 'RSW-G-W'], 'S', ['RSW-L-E', 'RSW-L-W', 'RSW-S-E', 'RSW-S-W', 'RSW-W-E', 'RSW-W-W']),
+    options: [
+      { value: 'None', sectors: [] },
+      { value: 'E', sectors: ['RSW-E-E', 'RSW-E-W', 'RSW-F-E', 'RSW-F-W', 'RSW-G-E', 'RSW-G-W'] },
+      { value: 'W', sectors: ['RSW-L-E', 'RSW-L-W', 'RSW-S-E', 'RSW-S-W', 'RSW-W-E', 'RSW-W-W'] },
+    ],
   },
   {
     airport: 'TPA',
     area: 'TPA',
     noneClearsArea: true,
-    options: createDirectionalOptions('N', ['TPA-B-N', 'TPA-D-N', 'TPA-E-N', 'TPA-F-N', 'TPA-G-N', 'TPA-P-N', 'TPA-S-N', 'TPA-W-N'], 'S', ['TPA-B-S', 'TPA-D-S', 'TPA-E-S', 'TPA-F-S', 'TPA-G-S', 'TPA-P-S', 'TPA-S-S', 'TPA-W-S']),
+    options: [
+      { value: 'None', sectors: [] },
+      { value: 'N', sectors: ['TPA-B-N', 'TPA-D-N', 'TPA-E-N', 'TPA-F-N', 'TPA-G-N', 'TPA-P-N', 'TPA-S-N', 'TPA-W-N'] },
+      { value: 'S', sectors: ['TPA-B-S', 'TPA-D-S', 'TPA-E-S', 'TPA-F-S', 'TPA-G-S', 'TPA-P-S', 'TPA-S-S', 'TPA-W-S'] },
+    ],
   },
 ];
 
