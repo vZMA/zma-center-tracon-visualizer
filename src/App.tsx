@@ -165,6 +165,16 @@ const App: Component = () => {
     { name: 'videomaps' },
   );
 
+  const [videoMapExpanded, setVideoMapExpanded] = createStore<Record<string, boolean>>(
+    Object.fromEntries(VIDEO_MAP_AIRPORTS.map((airport) => [airport, true])),
+  );
+
+  const toggleAirportMaps = (airport: string, value: boolean) => {
+    VIDEO_MAP_DEFINITIONS.filter((map) => map.airport === airport).forEach((map) => {
+      setVideomaps(map.id, value);
+    });
+  };
+
   const [cursor, setCursor] = createSignal('grab');
 
   const [settings, setSettings] = makePersisted(createStore<Settings>(DEFAULT_SETTINGS), {
@@ -373,18 +383,96 @@ const App: Component = () => {
             <For each={VIDEO_MAP_AIRPORTS}>
               {(airport) => {
                 const airportMaps = VIDEO_MAP_DEFINITIONS.filter((map) => map.airport === airport);
+                const allChecked = airportMaps.length > 0 && airportMaps.every((map) => !!videomaps[map.id]);
+                const someChecked = airportMaps.some((map) => !!videomaps[map.id]);
+
                 return (
-                  <div class="space-y-2">
-                    <div class="text-xs font-semibold uppercase tracking-wide text-slate-400">{airport}</div>
-                    <For each={airportMaps}>
-                      {(map) => (
-                        <Checkbox
-                          label={map.fileName.replace(/\.geojson$/i, '')}
-                          checked={!!videomaps[map.id]}
-                          onChange={(value: boolean) => setVideomaps(map.id, value)}
-                        />
-                      )}
-                    </For>
+                  <div class="flex flex-col space-y-1 mt-2">
+                    <div class="text-white flex items-center cursor-pointer group">
+                      <svg
+                        class={`w-4 h-4 text-gray-400 group-hover:text-white transition-all duration-200 transform ${videoMapExpanded[airport] ? 'rotate-90' : ''} mr-2 cursor-pointer`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                        onClick={() => setVideoMapExpanded(airport, !videoMapExpanded[airport])}
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                      <span
+                        class="group-hover:text-white transition-colors duration-200 cursor-pointer"
+                        onClick={() => setVideoMapExpanded(airport, !videoMapExpanded[airport])}
+                      >
+                        {airport}
+                      </span>
+
+                      <div class="flex ml-auto space-x-2">
+                        <Show when={!allChecked && airportMaps.length > 0}>
+                          <div
+                            class="text-gray-400 hover:text-gray-200 transition"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleAirportMaps(airport, true);
+                            }}
+                            title="Check all"
+                          >
+                            <svg
+                              class="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                          </div>
+                        </Show>
+                        <Show when={someChecked}>
+                          <div
+                            class="text-gray-400 hover:text-gray-200 transition"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleAirportMaps(airport, false);
+                            }}
+                            title="Uncheck all"
+                          >
+                            <svg
+                              class="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                          </div>
+                        </Show>
+                      </div>
+                    </div>
+
+                    <Show when={videoMapExpanded[airport]}>
+                      <div class="pl-6 space-y-1">
+                        <For each={airportMaps}>
+                          {(map) => (
+                            <Checkbox
+                              label={map.fileName.replace(/\.geojson$/i, '')}
+                              checked={!!videomaps[map.id]}
+                              onChange={(value: boolean) => setVideomaps(map.id, value)}
+                            />
+                          )}
+                        </For>
+                      </div>
+                    </Show>
                   </div>
                 );
               }}
