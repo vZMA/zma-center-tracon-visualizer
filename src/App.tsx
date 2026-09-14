@@ -170,8 +170,14 @@ const App: Component = () => {
   );
 
   const toggleAirportMaps = (airport: string, value: boolean) => {
-    VIDEO_MAP_DEFINITIONS.filter((map) => map.airport === airport).forEach((map) => {
-      setVideomaps(map.id, value);
+    setVideomaps((current) => {
+      const next = { ...current };
+      for (const map of VIDEO_MAP_DEFINITIONS) {
+        if (map.airport === airport) {
+          next[map.id] = value;
+        }
+      }
+      return next;
     });
   };
 
@@ -383,8 +389,9 @@ const App: Component = () => {
             <For each={VIDEO_MAP_AIRPORTS}>
               {(airport) => {
                 const airportMaps = VIDEO_MAP_DEFINITIONS.filter((map) => map.airport === airport);
-                const allChecked = airportMaps.length > 0 && airportMaps.every((map) => !!videomaps[map.id]);
-                const someChecked = airportMaps.some((map) => !!videomaps[map.id]);
+                const airportMapCount = airportMaps.length;
+                const allChecked = airportMapCount > 0 && airportMaps.every((map) => !!videomaps[map.id]);
+                const someChecked = airportMapCount > 0 && airportMaps.some((map) => !!videomaps[map.id]);
 
                 return (
                   <div class="flex flex-col space-y-1 mt-2">
@@ -407,7 +414,7 @@ const App: Component = () => {
                       </span>
 
                       <div class="flex ml-auto space-x-2">
-                        <Show when={!allChecked && airportMaps.length > 0}>
+                        <Show when={!allChecked && airportMapCount > 0}>
                           <div
                             class="text-gray-400 hover:text-gray-200 transition"
                             onClick={(e) => {
@@ -432,7 +439,7 @@ const App: Component = () => {
                             </svg>
                           </div>
                         </Show>
-                        <Show when={someChecked}>
+                        <Show when={airportMapCount > 0 && someChecked}>
                           <div
                             class="text-gray-400 hover:text-gray-200 transition"
                             onClick={(e) => {
