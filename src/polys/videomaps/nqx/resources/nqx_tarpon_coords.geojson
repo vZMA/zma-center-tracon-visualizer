@@ -1,0 +1,33 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "properties": { "id": 1, "name": "CHORA" }, "geometry": { "type": "Point", "coordinates": [-82.0, 25.25] } },
+    { "type": "Feature", "properties": { "id": 2, "name": "HARKY" }, "geometry": { "type": "Point", "coordinates": [-82.0, 24.916667] } },
+    { "type": "Feature", "properties": { "id": 3, "name": "TANUY" }, "geometry": { "type": "Point", "coordinates": [-82.1, 24.5] } },
+    { "type": "Feature", "properties": { "id": 4, "name": "BAGHO" }, "geometry": { "type": "Point", "coordinates": [-81.75, 24.283333] } },
+    { "type": "Feature", "properties": { "id": 5, "name": "FISHS" }, "geometry": { "type": "Point", "coordinates": [-80.966667, 24.416667] } },
+    { "type": "Feature", "properties": { "id": 6, "name": "FORT" }, "geometry": { "type": "Point", "coordinates": [-82.866667, 24.633333] } },
+    { "type": "Feature", "properties": { "id": 7, "name": "DUVAL" }, "geometry": { "type": "Point", "coordinates": [-81.816667, 24.566667] } },
+    { "type": "Feature", "properties": { "id": 8, "name": "BOSTON" }, "geometry": { "type": "Point", "coordinates": [-82.283333, 25.483333] } },
+    { "type": "Feature", "properties": { "id": 9, "name": "SPOKANE" }, "geometry": { "type": "Point", "coordinates": [-83.283333, 25.433333] } },
+    { "type": "Feature", "properties": { "id": 10, "name": "EVERETT" }, "geometry": { "type": "Point", "coordinates": [-83.466667, 25.416667] } },
+    { "type": "Feature", "properties": { "id": 11, "name": "D.C." }, "geometry": { "type": "Point", "coordinates": [-82.283333, 24.916667] } },
+    { "type": "Feature", "properties": { "id": 12, "name": "RENO" }, "geometry": { "type": "Point", "coordinates": [-83.3, 24.883333] } },
+    { "type": "Feature", "properties": { "id": 13, "name": "CHICO" }, "geometry": { "type": "Point", "coordinates": [-83.483333, 24.883333] } },
+    { "type": "Feature", "properties": { "id": 14, "name": "TAMPA" }, "geometry": { "type": "Point", "coordinates": [-82.383333, 24.55] } },
+    { "type": "Feature", "properties": { "id": 15, "name": "YUMA" }, "geometry": { "type": "Point", "coordinates": [-83.35, 24.3] } },
+    { "type": "Feature", "properties": { "id": 16, "name": "CARLSBAD" }, "geometry": { "type": "Point", "coordinates": [-83.516667, 24.266667] } },
+    { "type": "Feature", "properties": { "id": 17, "name": "NEWPORT" }, "geometry": { "type": "Point", "coordinates": [-82.3, 25.316667] } },
+    { "type": "Feature", "properties": { "id": 18, "name": "PORTLAND" }, "geometry": { "type": "Point", "coordinates": [-83.466667, 25.25] } },
+    { "type": "Feature", "properties": { "id": 19, "name": "BOISE" }, "geometry": { "type": "Point", "coordinates": [-83.283333, 25.1] } },
+    { "type": "Feature", "properties": { "id": 20, "name": "SALEM" }, "geometry": { "type": "Point", "coordinates": [-83.45, 25.083333] } },
+    { "type": "Feature", "properties": { "id": 21, "name": "JAX" }, "geometry": { "type": "Point", "coordinates": [-82.383333, 24.666667] } },
+    { "type": "Feature", "properties": { "id": 22, "name": "L.A." }, "geometry": { "type": "Point", "coordinates": [-83.566667, 24.45] } },
+    { "type": "Feature", "properties": { "id": 23, "name": "FRESNO" }, "geometry": { "type": "Point", "coordinates": [-83.4, 24.633333] } },
+    { "type": "Feature", "properties": { "id": 24, "name": "FRISCO" }, "geometry": { "type": "Point", "coordinates": [-83.583333, 24.65] } },
+    { "type": "Feature", "properties": { "id": 25, "name": "NASSAU" }, "geometry": { "type": "Point", "coordinates": [-81.333333, 24.333333] } },
+    { "type": "Feature", "properties": { "id": 26, "name": "CUBA" }, "geometry": { "type": "Point", "coordinates": [-82.166667, 24.083333] } },
+    { "type": "Feature", "properties": { "id": 27, "name": "BAGDAD" }, "geometry": { "type": "Point", "coordinates": [-80.75, 24.25] } },
+    { "type": "Feature", "properties": { "id": 28, "name": "KABUL" }, "geometry": { "type": "Point", "coordinates": [-79.833333, 24.416667] } }
+  ]
+}

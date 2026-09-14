@@ -1,6 +1,33 @@
 import { BaseMap, CenterAreaDefinition, MapStyle, TraconAreaPolys, TraconPolyDefinition } from '~/lib/types';
 import { DEFAULT_MAP_STYLE } from '~/lib/defaults';
 
+export type VideoMapDefinition = {
+  id: string;
+  airport: string;
+  fileName: string;
+  data: unknown;
+};
+
+const videomapModules = import.meta.glob('../polys/videomaps/**/*.geojson', { eager: true, import: 'default' });
+
+export const VIDEO_MAP_DEFINITIONS: VideoMapDefinition[] = Object.entries(videomapModules)
+  .map(([path, data]) => {
+    const parts = path.split('/');
+    const fileName = parts[parts.length - 1] ?? path;
+    const airport = (parts[parts.length - 2] ?? 'UNKNOWN').toUpperCase();
+    const id = fileName.replace(/\.geojson$/i, '').toUpperCase();
+
+    return {
+      id,
+      airport,
+      fileName,
+      data,
+    };
+  })
+  .sort((a, b) => a.airport.localeCompare(b.airport) || a.fileName.localeCompare(b.fileName));
+
+export const VIDEO_MAP_AIRPORTS = ['MIA', 'TPA', 'RSW', 'NQX', 'PBI'] as const;
+
 export const NAVDATA_API_URL = 'https://navdata.oakartcc.org';
 
 // ZMA center sectors

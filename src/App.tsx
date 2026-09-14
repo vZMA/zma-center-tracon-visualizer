@@ -1,10 +1,16 @@
 import { makePersisted } from '@solid-primitives/storage';
 import { Component, createEffect, createSignal, DEV, For, Show } from 'solid-js';
 import { DEFAULT_MAP_STYLE, DEFAULT_SETTINGS, DEFAULT_VIEWPORT } from '~/lib/defaults';
-import { Section, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui-core';
+import { Checkbox, Section, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui-core';
 import { MapStyleSelector } from '~/components/MapStyleSelector';
 import { createStore, produce } from 'solid-js/store';
-import { BASE_MAPS, CENTER_POLY_DEFINITIONS, TRACON_POLY_DEFINITIONS } from '~/lib/config';
+import {
+  BASE_MAPS,
+  CENTER_POLY_DEFINITIONS,
+  TRACON_POLY_DEFINITIONS,
+  VIDEO_MAP_AIRPORTS,
+  VIDEO_MAP_DEFINITIONS,
+} from '~/lib/config';
 import {
   CenterAirspaceDisplayState,
   AppDisplayState,
@@ -22,7 +28,7 @@ import { Footer } from '~/components/Footer';
 import { MapReset } from '~/components/MapReset';
 
 // Mapbox
-import MapGL from 'solid-map-gl';
+import MapGL, { Layer, Source } from 'solid-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import { BaseMaps } from '~/components/BaseMaps';
@@ -150,6 +156,13 @@ const App: Component = () => {
 
   const [mountedBaseMaps] = createStore<MountedBaseMapState[]>(
     persistedBaseMaps.map((m) => ({ id: m.baseMap.name, hasMounted: m.checked })),
+  );
+
+  const [videomaps, setVideomaps] = makePersisted(
+    createStore<Record<string, boolean>>(
+      Object.fromEntries(VIDEO_MAP_DEFINITIONS.map((map) => [map.id, false])),
+    ),
+    { name: 'videomaps' },
   );
 
   const [cursor, setCursor] = createSignal('grab');
@@ -356,6 +369,28 @@ const App: Component = () => {
             <MapStyleSelector style={mapStyle} setStyle={setMapStyle} />
           </Section>
 
+          <Section header="Base Maps" class="space-y-3">
+            <For each={VIDEO_MAP_AIRPORTS}>
+              {(airport) => {
+                const airportMaps = VIDEO_MAP_DEFINITIONS.filter((map) => map.airport === airport);
+                return (
+                  <div class="space-y-2">
+                    <div class="text-xs font-semibold uppercase tracking-wide text-slate-400">{airport}</div>
+                    <For each={airportMaps}>
+                      {(map) => (
+                        <Checkbox
+                          label={map.fileName.replace(/\.geojson$/i, '')}
+                          checked={!!videomaps[map.id]}
+                          onChange={(value: boolean) => setVideomaps(map.id, value)}
+                        />
+                      )}
+                    </For>
+                  </div>
+                );
+              }}
+            </For>
+          </Section>
+
           <Section header="" class="space-y-2">
             <Show when={activeTab() === 'tracon'}>
               <div class="grid grid-cols-2 gap-2">
@@ -458,6 +493,24 @@ const App: Component = () => {
           <StyleSwitchFix />
           <BaseMaps persistedMapsState={persistedBaseMaps} mountedMapsState={mountedBaseMaps} />
           <BaseMapColorSync isDark={mapStyle().label === 'World Dark'} />
+          <For each={VIDEO_MAP_DEFINITIONS}>
+            {(map) => (
+              <Show when={videomaps[map.id]}>
+                <Source id={map.id} source={{ type: 'geojson', data: map.data as any }}>
+                  <Layer
+                    id={`${map.id}-line`}
+                    style={{
+                      type: 'line',
+                      paint: {
+                        'line-color': '#fbbf24',
+                        'line-width': 1.5,
+                      },
+                    }}
+                  />
+                </Source>
+              </Show>
+            )}
+          </For>
           <GeojsonPolySources sources={allSources} />
           <GeojsonPolyLayers displayStateStore={allStore} type="tracon" allPolys={TRACON_POLY_DEFINITIONS} />
           <GeojsonPolyLayers displayStateStore={allStore} type="center" />

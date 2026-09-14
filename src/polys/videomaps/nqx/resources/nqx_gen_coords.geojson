@@ -1,0 +1,140 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "CANOA", "type": "ENRT" },
+      "geometry": { "type": "Point", "coordinates": [-83.05, 24.0] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "CARNU", "type": "ENRT" },
+      "geometry": { "type": "Point", "coordinates": [-81.325588889, 25.138369444] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "GIGIH", "type": "ENRT" },
+      "geometry": { "type": "Point", "coordinates": [-81.737733333, 25.009083333] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "GUCEL", "type": "ENRT" },
+      "geometry": { "type": "Point", "coordinates": [-81.237583333, 24.647947222] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "KARTR", "type": "ENRT" },
+      "geometry": { "type": "Point", "coordinates": [-81.512844444, 25.496044444] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "MAXIM", "type": "ENRT" },
+      "geometry": { "type": "Point", "coordinates": [-82.518813889, 24.0] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "RIGOR", "type": "ENRT" },
+      "geometry": { "type": "Point", "coordinates": [-81.793683333, 25.122702778] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "STING", "type": "ENRT" },
+      "geometry": { "type": "Point", "coordinates": [-81.796291667, 24.881588889] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "STRAP", "type": "ENRT" },
+      "geometry": { "type": "Point", "coordinates": [-81.589680556, 24.831955556] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "VRGAS", "type": "ENRT" },
+      "geometry": { "type": "Point", "coordinates": [-81.132222222, 24.464166667] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "CORGI", "type": "ENRT" },
+      "geometry": { "type": "Point", "coordinates": [-81.71375, 24.8618] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "BIPIN", "type": "ENRT", "code": "K7 4606275" },
+      "geometry": { "type": "Point", "coordinates": [-81.364736111, 24.634116667] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "DROWN", "type": "ENRT", "code": "K7 2105411" },
+      "geometry": { "type": "Point", "coordinates": [-80.579291667, 24.717788889] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "JANKA", "type": "ENRT", "code": "K7 4606787" },
+      "geometry": { "type": "Point", "coordinates": [-81.262352778, 24.645305556] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "TWNNS", "type": "ENRT", "code": "K7 4606275" },
+      "geometry": { "type": "Point", "coordinates": [-80.558430556, 24.816275] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "BAGHO", "type": "ENRT", "code": "K7 4464722" },
+      "geometry": { "type": "Point", "coordinates": [-81.844308333, 24.261930556] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "CHORA", "type": "ENRT", "code": "K7 4464722" },
+      "geometry": { "type": "Point", "coordinates": [-81.952808333, 25.255563889] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "FISHS", "type": "ENRT", "code": "K7 4464722" },
+      "geometry": { "type": "Point", "coordinates": [-80.976975, 24.405494444] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "HARKY", "type": "ENRT", "code": "K7 4464722" },
+      "geometry": { "type": "Point", "coordinates": [-81.9804, 24.940472222] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "TANUY", "type": "ENRT", "code": "K7 446622" },
+      "geometry": { "type": "Point", "coordinates": [-82.0987083333, 24.52614722222] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "DVALL", "type": "ENRT", "code": "K7 5916995" },
+      "geometry": { "type": "Point", "coordinates": [-80.998955556, 25.514686111] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "FNTSY", "type": "ENRT", "code": "K7 4539991" },
+      "geometry": { "type": "Point", "coordinates": [-81.020502778, 24.769375000] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "KRAKN", "type": "ENRT", "code": "K7 4539991" },
+      "geometry": { "type": "Point", "coordinates": [-81.620241667, 25.264022222] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "MARCI", "type": "ENRT", "code": "K7 5906499" },
+      "geometry": { "type": "Point", "coordinates": [-81.783991667, 25.891066667] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "MNATE", "type": "ENRT", "code": "K7 4464707" },
+      "geometry": { "type": "Point", "coordinates": [-80.524027778, 24.979316667] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "MUTTN", "type": "ENRT", "code": "K7 4474455" },
+      "geometry": { "type": "Point", "coordinates": [-81.352169444, 25.487380556] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "TOWIE", "type": "ENRT", "code": "K7 4474455" },
+      "geometry": { "type": "Point", "coordinates": [-80.997897222, 25.378513889] }
+    }
+  ]
+}
