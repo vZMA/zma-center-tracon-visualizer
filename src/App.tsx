@@ -170,15 +170,13 @@ const App: Component = () => {
   );
 
   const handleToggleAirportMaps = (airport: string, value: boolean) => {
-    setVideomaps(
-      produce((state) => {
-        for (const map of VIDEO_MAP_DEFINITIONS) {
-          if (map.airport === airport) {
-            state[map.id] = value;
-          }
-        }
-      }),
-    );
+    const updatedVideomaps = { ...videomaps };
+    for (const map of VIDEO_MAP_DEFINITIONS) {
+      if (map.airport === airport) {
+        updatedVideomaps[map.id] = value;
+      }
+    }
+    setVideomaps(updatedVideomaps);
   };
 
   const [cursor, setCursor] = createSignal('grab');
