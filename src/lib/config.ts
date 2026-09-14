@@ -15,7 +15,7 @@ export const VIDEO_MAP_DEFINITIONS: VideoMapDefinition[] = Object.entries(videom
     const parts = path.split('/');
     const fileName = parts[parts.length - 1] ?? path;
     const airport = (parts[parts.length - 2] ?? 'UNKNOWN').toUpperCase();
-    const id = fileName.replace(/\.geojson$/i, '').toUpperCase();
+    const id = `${airport}-${fileName.replace(/\.geojson$/i, '')}`.toUpperCase();
 
     return {
       id,

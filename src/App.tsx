@@ -1,7 +1,7 @@
 import { makePersisted } from '@solid-primitives/storage';
 import { Component, createEffect, createSignal, DEV, For, Show } from 'solid-js';
 import { DEFAULT_MAP_STYLE, DEFAULT_SETTINGS, DEFAULT_VIEWPORT } from '~/lib/defaults';
-import { Checkbox, Section, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui-core';
+import { Section, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui-core';
 import { MapStyleSelector } from '~/components/MapStyleSelector';
 import { createStore, produce } from 'solid-js/store';
 import {
