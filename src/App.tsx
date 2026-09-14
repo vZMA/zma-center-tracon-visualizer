@@ -1,5 +1,5 @@
 import { makePersisted } from '@solid-primitives/storage';
-import { Component, createEffect, createMemo, createSignal, DEV, For, Show } from 'solid-js';
+import { Component, createEffect, createSignal, DEV, For, Show } from 'solid-js';
 import { DEFAULT_MAP_STYLE, DEFAULT_SETTINGS, DEFAULT_VIEWPORT } from '~/lib/defaults';
 import { Checkbox, Section, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui-core';
 import { MapStyleSelector } from '~/components/MapStyleSelector';
@@ -37,6 +37,7 @@ import { StyleSwitchFix } from '~/components/StyleSwitchFix';
 import { GeojsonPolySources } from '~/components/GeojsonPolySources';
 import { GeojsonPolyLayers } from '~/components/GeojsonPolyLayers';
 import { SectorDisplayWithControls } from '~/components/SectorDisplayWithControls';
+import { VideoMapDisplayWithControls } from '~/components/VideoMapDisplayWithControls';
 import { SettingsDialog } from '~/components/SettingsDialog';
 import { GeoJSONFeature, MapMouseEvent } from 'mapbox-gl';
 import { getUniqueLayers, isTransparentFill, getGeojsonSources } from '~/lib/geojson';
@@ -164,20 +165,6 @@ const App: Component = () => {
     ),
     { name: 'videomaps' },
   );
-
-  const [videoMapExpanded, setVideoMapExpanded] = createStore<Record<string, boolean>>(
-    Object.fromEntries(VIDEO_MAP_AIRPORTS.map((airport) => [airport, false])),
-  );
-
-  const handleToggleAirportMaps = (airport: string, value: boolean) => {
-    const updatedVideomaps = { ...videomaps };
-    for (const map of VIDEO_MAP_DEFINITIONS) {
-      if (map.airport === airport) {
-        updatedVideomaps[map.id] = value;
-      }
-    }
-    setVideomaps(updatedVideomaps);
-  };
 
   const [cursor, setCursor] = createSignal('grab');
 
@@ -387,98 +374,13 @@ const App: Component = () => {
             <For each={VIDEO_MAP_AIRPORTS}>
               {(airport) => {
                 const airportMaps = VIDEO_MAP_DEFINITIONS.filter((map) => map.airport === airport);
-                const checkedCount = createMemo(() => airportMaps.filter((map) => !!videomaps[map.id]).length);
-                const showCheckAll = createMemo(() => checkedCount() < airportMaps.length);
-                const showUncheckAll = createMemo(() => checkedCount() > 0);
-
                 return (
-                  <div class="flex flex-col space-y-1 mt-2">
-                    <div class="text-white flex items-center cursor-pointer group">
-                      <svg
-                        class={`w-4 h-4 text-gray-400 group-hover:text-white transition-all duration-200 transform ${videoMapExpanded[airport] ? 'rotate-90' : ''} mr-2 cursor-pointer`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                        onClick={() => setVideoMapExpanded(airport, !videoMapExpanded[airport])}
-                      >
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                      <span
-                        class="group-hover:text-white transition-colors duration-200 cursor-pointer"
-                        onClick={() => setVideoMapExpanded(airport, !videoMapExpanded[airport])}
-                      >
-                        {airport}
-                      </span>
-
-                      <div class="flex ml-auto space-x-2">
-                        <Show when={showCheckAll()}>
-                          <div
-                            class="text-gray-400 hover:text-gray-200 transition"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleAirportMaps(airport, true);
-                            }}
-                            title="Check all"
-                          >
-                            <svg
-                              class="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                          </div>
-                        </Show>
-                        <Show when={showUncheckAll()}>
-                          <div
-                            class="text-gray-400 hover:text-gray-200 transition"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleAirportMaps(airport, false);
-                            }}
-                            title="Uncheck all"
-                          >
-                            <svg
-                              class="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                          </div>
-                        </Show>
-                      </div>
-                    </div>
-
-                    <Show when={videoMapExpanded[airport]}>
-                      <div class="pl-6 space-y-1">
-                        <For each={airportMaps}>
-                          {(map) => (
-                            <Checkbox
-                              label={map.fileName.replace(/\.geojson$/i, '')}
-                              checked={!!videomaps[map.id]}
-                              onChange={(value: boolean) => setVideomaps(map.id, value)}
-                            />
-                          )}
-                        </For>
-                      </div>
-                    </Show>
-                  </div>
+                  <VideoMapDisplayWithControls
+                    airport={airport}
+                    maps={airportMaps}
+                    store={videomaps}
+                    setStore={setVideomaps}
+                  />
                 );
               }}
             </For>
