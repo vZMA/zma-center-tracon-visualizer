@@ -391,7 +391,9 @@ const App: Component = () => {
                 const airportMaps = VIDEO_MAP_DEFINITIONS.filter((map) => map.airport === airport);
                 const airportMapCount = airportMaps.length;
                 const allChecked = airportMapCount > 0 && airportMaps.every((map) => !!videomaps[map.id]);
-                const someChecked = airportMapCount > 0 && airportMaps.some((map) => !!videomaps[map.id]);
+                const checkedCount = airportMaps.filter((map) => !!videomaps[map.id]).length;
+                const showCheckAll = airportMapCount > 0 && checkedCount < airportMapCount;
+                const showUncheckAll = checkedCount > 0;
 
                 return (
                   <div class="flex flex-col space-y-1 mt-2">
@@ -414,7 +416,7 @@ const App: Component = () => {
                       </span>
 
                       <div class="flex ml-auto space-x-2">
-                        <Show when={!allChecked && airportMapCount > 0}>
+                        <Show when={showCheckAll}>
                           <div
                             class="text-gray-400 hover:text-gray-200 transition"
                             onClick={(e) => {
@@ -439,7 +441,7 @@ const App: Component = () => {
                             </svg>
                           </div>
                         </Show>
-                        <Show when={airportMapCount > 0 && someChecked}>
+                        <Show when={showUncheckAll}>
                           <div
                             class="text-gray-400 hover:text-gray-200 transition"
                             onClick={(e) => {
