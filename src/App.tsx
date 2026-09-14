@@ -169,16 +169,12 @@ const App: Component = () => {
     Object.fromEntries(VIDEO_MAP_AIRPORTS.map((airport) => [airport, false])),
   );
 
-  const toggleAirportMaps = (airport: string, value: boolean) => {
-    setVideomaps((current) => {
-      const next = { ...current };
-      for (const map of VIDEO_MAP_DEFINITIONS) {
-        if (map.airport === airport) {
-          next[map.id] = value;
-        }
+  const handleToggleAirportMaps = (airport: string, value: boolean) => {
+    for (const map of VIDEO_MAP_DEFINITIONS) {
+      if (map.airport === airport) {
+        setVideomaps(map.id, value);
       }
-      return next;
-    });
+    }
   };
 
   const [cursor, setCursor] = createSignal('grab');
@@ -390,7 +386,6 @@ const App: Component = () => {
               {(airport) => {
                 const airportMaps = VIDEO_MAP_DEFINITIONS.filter((map) => map.airport === airport);
                 const airportMapCount = airportMaps.length;
-                const allChecked = airportMapCount > 0 && airportMaps.every((map) => !!videomaps[map.id]);
                 const checkedCount = airportMaps.filter((map) => !!videomaps[map.id]).length;
                 const showCheckAll = airportMapCount > 0 && checkedCount < airportMapCount;
                 const showUncheckAll = checkedCount > 0;
@@ -421,7 +416,7 @@ const App: Component = () => {
                             class="text-gray-400 hover:text-gray-200 transition"
                             onClick={(e) => {
                               e.stopPropagation();
-                              toggleAirportMaps(airport, true);
+                              handleToggleAirportMaps(airport, true);
                             }}
                             title="Check all"
                           >
@@ -446,7 +441,7 @@ const App: Component = () => {
                             class="text-gray-400 hover:text-gray-200 transition"
                             onClick={(e) => {
                               e.stopPropagation();
-                              toggleAirportMaps(airport, false);
+                              handleToggleAirportMaps(airport, false);
                             }}
                             title="Uncheck all"
                           >
