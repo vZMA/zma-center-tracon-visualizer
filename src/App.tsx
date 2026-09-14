@@ -1,5 +1,5 @@
 import { makePersisted } from '@solid-primitives/storage';
-import { Component, createEffect, createSignal, DEV, For, Show } from 'solid-js';
+import { Component, createEffect, createMemo, createSignal, DEV, For, Show } from 'solid-js';
 import { DEFAULT_MAP_STYLE, DEFAULT_SETTINGS, DEFAULT_VIEWPORT } from '~/lib/defaults';
 import { Checkbox, Section, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui-core';
 import { MapStyleSelector } from '~/components/MapStyleSelector';
@@ -385,10 +385,9 @@ const App: Component = () => {
             <For each={VIDEO_MAP_AIRPORTS}>
               {(airport) => {
                 const airportMaps = VIDEO_MAP_DEFINITIONS.filter((map) => map.airport === airport);
-                const airportMapCount = airportMaps.length;
-                const checkedCount = airportMaps.filter((map) => !!videomaps[map.id]).length;
-                const showCheckAll = airportMapCount > 0 && checkedCount < airportMapCount;
-                const showUncheckAll = checkedCount > 0;
+                const checkedCount = createMemo(() => airportMaps.filter((map) => !!videomaps[map.id]).length);
+                const showCheckAll = createMemo(() => checkedCount() < airportMaps.length);
+                const showUncheckAll = createMemo(() => checkedCount() > 0);
 
                 return (
                   <div class="flex flex-col space-y-1 mt-2">
@@ -411,7 +410,7 @@ const App: Component = () => {
                       </span>
 
                       <div class="flex ml-auto space-x-2">
-                        <Show when={showCheckAll}>
+                        <Show when={showCheckAll()}>
                           <div
                             class="text-gray-400 hover:text-gray-200 transition"
                             onClick={(e) => {
@@ -436,7 +435,7 @@ const App: Component = () => {
                             </svg>
                           </div>
                         </Show>
-                        <Show when={showUncheckAll}>
+                        <Show when={showUncheckAll()}>
                           <div
                             class="text-gray-400 hover:text-gray-200 transition"
                             onClick={(e) => {
