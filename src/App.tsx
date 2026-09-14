@@ -166,7 +166,7 @@ const App: Component = () => {
   );
 
   const [videoMapExpanded, setVideoMapExpanded] = createStore<Record<string, boolean>>(
-    Object.fromEntries(VIDEO_MAP_AIRPORTS.map((airport) => [airport, true])),
+    Object.fromEntries(VIDEO_MAP_AIRPORTS.map((airport) => [airport, false])),
   );
 
   const toggleAirportMaps = (airport: string, value: boolean) => {
